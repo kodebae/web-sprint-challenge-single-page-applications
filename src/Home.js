@@ -1,26 +1,22 @@
-import React from "react"
-import { Link } from "react-router-dom";
+import React from "react";
+import { useHistory } from "react-router-dom";
 
-function Order ( props )
-{
-  return(
-    <>
-      <h3>{ props.order }</h3>
-      <div className>Order</div>
-    </>
+function Home(props) {
+  const history = useHistory();
+  console.log(history);
+  const routeToForm = (event) => {
+    history.push("/pizza");
+  };
+
+  return (
+    <div className='home-wrapper'>
+      <img
+        className='home-image'
+        src='https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=925&q=80'
+        alt=''
+      />
+    </div>
   );
 }
 
-export default function()
-{
-  return(
-    // <>
-        <div>
-            <div className='headings'>
-                <h1>Your favofite food, delivered while coding</h1>
-                <Link to = "/pizza" className = "link" >Pizza?</Link>
-            </div>
-        </div>
-    /* </> */
-  )
-}
+export default Home;

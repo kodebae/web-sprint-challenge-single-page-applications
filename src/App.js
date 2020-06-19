@@ -1,28 +1,33 @@
-import React from 'react';
-import { Route, Link, Switch } from 'react-router-dom';
-import Home from './Home';
+import React, { useState } from "react";
+import "./index.css";
+import Home from ".//Home";
+import Form from ".//Form";
+import { Route, Link, Switch } from "react-router-dom";
 
-const App = () => {
-const [pizza, setPizza] = useState("");
+export default function App() {
+  const [pizza, setPizza] = useState("");
+
   return (
-    <div>
-        <h1>Lambda Eats</h1>
-        <p>Order Pizza While You Code</p>
-        <Link to='/'>Home</Link>
+    <div className='App'>
+      <nav>
+        <div>
+          {" "}
+          <h1 className='store-header'>Lambda Pizza</h1>
+        </div>
+        <div className='nav-links'>
+          <Link to='/'>Home</Link>
 
-        <Link to='/pizza'>Create Your Pizza!</Link>
-      
-     
-        <Switch>
-          <Route path='/pizza'>
+          <Link to='/pizza'>Order a Yummy Pizza!</Link>
+        </div>
+      </nav>
+
+      <Switch>
+        <Route path='/pizza'>
           <Form pizza={pizza} />
-          </Route>
-          <Route path='/' component={Home} />
-        </Switch>
-        
-    </div>
-      );
-    };
-    
+        </Route>
 
-export default App;
+        <Route path='/' component={Home} />
+      </Switch>
+    </div>
+  );
+}

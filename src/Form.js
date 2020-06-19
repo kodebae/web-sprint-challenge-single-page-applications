@@ -1,41 +1,104 @@
-import React, { useState } from "react";
-//removed useEffect from import
-
-
-
+import React, { useState, useEffect } from "react";
+import * as yup from "yup";
+import axios from "axios";
 
 const Form = () => {
-        const [formState, setFormState] = useState({
-        name: "",
-        email: "",
-        topping: "",
-        instructions: "",
+
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    toppings: "",
+    instructions: "",
+  });
+
+  const [buttonDisabled, setButtonDisabled] = useState("");
+
+  const [post, setPost] = useState([]);
+
+  const formSchema = yup.object().shape({
+    name: yup
+      .string()
+      .required("Enter your name here please")
+      .min(2, "Your real name must be longer than 2 characters"),
+    size: yup.string(),
+    pepperoni: yup.boolean(),
+    olives: yup.boolean(),
+    tomatoes: yup.boolean(),
+    bacon: yup.boolean(),
+    instructions: yup.string(),
+  });
+  const [formState, setFormState] = useState({
+    name: "",
+    size: "Medium",
+    pepperoni: false,
+    olives: false,
+    tomatoes: false,
+    bacon: false,
+    instructions: "",
+    amount: 0,
+  });
+
+  useEffect(() => {
+    console.log("a form state change has been made");
+    formSchema.isValid(formState).then((valid) => {
+      setButtonDisabled(!valid);
+    });
+  });
+
+  const validateChange = (e) => {
+    yup
+      .reach(formSchema, e.target.name)
+      .validate(e.target.value)
+      .then((valid) => {
+        setErrors({
+          ...errors,
+          [e.target.name]: "",
         });
+      })
+      .catch((err) => {
+        setErrors({
+          ...errors,
+          [e.target.name]: err.errors[0],
+        });
+      });
+  };
 
+  const inputChange = (e) => {
+    e.persist();
+    const newFormData = {
+      ...formState,
+      [e.target.name]:
+        e.target.type === "checkbox" ? e.target.checked : e.target.value,
+    };
+    validateChange(e);
+    setFormState(newFormData);
+  };
 
-    const [errors, setErrors] = useState({
-        name: "",
-        email: "",
-        toppings: "",
-        instructions: "",
-    });
+  const formSubmit = (e) => {
+    e.preventDefault();
+    axios
+      .post("https://reqres.in/api/users", formState)
+      .then((res) => {
+        setPost(res.data);
+        console.log("success", post);
+        setFormState({
+          name: "",
+          email: "",
+          password: "",
+          terms: "",
+          role: "",
+        });
+      })
+      .catch((err) => {
+        console.log(err.response);
+      });
+  };
 
-
-    const [formState, setFormState] = useState({
-        name: "",
-        size: "Medium",
-        pepperoni: false,
-        olives: false,
-        tomatoes: false,
-        bacon: false,
-        instructions: "",
-        amount: 0,
-    });
-return (
+  return (
     <div className='pizzaForm'>
       <div className='form-heading'>
         <h2>Lambda Eats</h2>
-        <h3>My Pizza My Way!</h3>
+        <h3>Create your order here!</h3>
       </div>
 
       <form className='form' onSubmit={formSubmit}>
@@ -77,7 +140,7 @@ return (
           <select id='size' name='size' onChange={inputChange}>
             <option value='small'>Small</option>
             <option value='medium'>Medium</option>
-            <option value='larg'>Large</option>
+            <option value='large'>Large</option>
           </select>
         </label>
 
@@ -113,7 +176,7 @@ return (
             <input
               type='checkbox'
               id='tomatoes'
-              name='tomates'
+              name='tomatoes'
               checked={formState.tomatoes}
               onChange={inputChange}
             />
